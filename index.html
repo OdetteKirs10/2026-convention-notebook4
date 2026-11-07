@@ -1,0 +1,1159 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Eternal Happiness 2026 - Convention Notebook</title>
+
+  <!-- PWA Meta Tags & Theme Configuration -->
+  <meta name="theme-color" content="#1e3a8a">
+  <meta name="description" content="Personal Digital Note-Taking Progressive Web App for the 2026 Eternal Happiness Convention of Jehovah's Witnesses">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="2026 Notebook">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons & QR Code Generator -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    /* Smooth transitions and mobile optimization */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    textarea:focus {
+      outline: none;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 4px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-brand-600 text-white p-2 rounded-xl shadow-sm">
+          <i data-lucide="book-marked" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight text-slate-900 dark:text-white">Eternal Happiness</h1>
+          <p class="text-xs text-brand-600 dark:text-brand-400 font-medium">2026 Convention Notebook</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Search notes button -->
+        <button id="searchToggleBtn" aria-label="Search Notes" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Share / QR button -->
+        <button id="shareModalBtn" aria-label="Share App" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Share with Delegates">
+          <i data-lucide="share-2" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Export button -->
+        <button id="exportModalBtn" aria-label="Export or Print" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Backup & Export">
+          <i data-lucide="download" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Theme toggle -->
+        <button id="themeToggleBtn" aria-label="Toggle Theme" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition">
+          <i data-lucide="moon" id="themeIcon" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Live Search Bar -->
+    <div id="searchContainer" class="hidden max-w-4xl mx-auto px-4 pb-3">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+        <input type="text" id="liveSearchInput" placeholder="Filter talks, themes, or your notes..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 text-slate-900 dark:text-white placeholder-slate-400" />
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= DAY NAVIGATION TABS ================= -->
+  <nav class="sticky top-[57px] z-30 bg-slate-100/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-4xl mx-auto px-4 flex justify-between gap-2 overflow-x-auto no-scrollbar py-2">
+      <button class="day-tab flex-1 py-2 px-3 rounded-lg text-sm font-semibold text-center transition flex items-center justify-center gap-1.5 shadow-xs bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-900" data-day="0">
+        <span>Friday</span>
+      </button>
+      <button class="day-tab flex-1 py-2 px-3 rounded-lg text-sm font-medium text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5" data-day="1">
+        <span>Saturday</span>
+      </button>
+      <button class="day-tab flex-1 py-2 px-3 rounded-lg text-sm font-medium text-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5" data-day="2">
+        <span>Sunday</span>
+      </button>
+      <button class="day-tab py-2 px-3 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5" data-day="info">
+        <i data-lucide="info" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">Info</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ================= MAIN CONTENT CONTAINER ================= -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- Day Theme Banner -->
+    <section id="dayHeaderBanner" class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-brand-900 via-brand-800 to-indigo-900 text-white shadow-md">
+      <div class="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-blue-200 mb-1">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span id="dayHeaderTag">FRIDAY THEME</span>
+      </div>
+      <h2 id="dayThemeText" class="text-xl sm:text-2xl font-bold tracking-tight">"Happy are those conscious of their spiritual need"</h2>
+      <p id="dayThemeScripture" class="text-sm text-blue-100 mt-1 flex items-center gap-1 cursor-pointer hover:underline">
+        <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Matthew 5:3
+      </p>
+    </section>
+
+    <!-- Sessions & Talks Container -->
+    <div id="talksList" class="space-y-6">
+      <!-- Dynamic program talks populated by JavaScript -->
+    </div>
+
+    <!-- Delegate Information Screen (Tab: 'info') -->
+    <div id="infoSection" class="hidden space-y-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-brand-600 dark:text-brand-400">
+          <i data-lucide="info" class="w-5 h-5"></i> Information for Delegates
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700 dark:text-slate-300">
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5"><i data-lucide="users" class="w-4 h-4 text-brand-600"></i> Attendants</p>
+            <p class="mt-1 text-xs sm:text-sm">Assigned to assist you. Cooperate regarding parking, crowd movement, and seat saving.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5"><i data-lucide="droplet" class="w-4 h-4 text-cyan-600"></i> Baptism</p>
+            <p class="mt-1 text-xs sm:text-sm">Reserved seating on the main floor before Saturday morning's discourse. Bring towel and modest attire.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5"><i data-lucide="heart-handshake" class="w-4 h-4 text-rose-500"></i> Voluntary Donations</p>
+            <p class="mt-1 text-xs sm:text-sm">Contribution boxes are in the hall, or you can securely donate online at <a href="https://donate.jw.org" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 underline font-medium">donate.jw.org</a>.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5"><i data-lucide="armchair" class="w-4 h-4 text-amber-500"></i> Seating Consideration</p>
+            <p class="mt-1 text-xs sm:text-sm">Save seats only for immediate household family or those traveling in your personal vehicle.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5"><i data-lucide="briefcase-medical" class="w-4 h-4 text-red-500"></i> First Aid</p>
+            <p class="mt-1 text-xs sm:text-sm">Reserved strictly for emergencies occurring on convention premises.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5"><i data-lucide="compass" class="w-4 h-4 text-purple-500"></i> Volunteer Service</p>
+            <p class="mt-1 text-xs sm:text-sm">To volunteer your services, please check in at the Information & Volunteer Service Department.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER / STATUS BAR ================= -->
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-3 text-center text-xs text-slate-500 dark:text-slate-400">
+    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span class="flex items-center gap-1.5">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Personal notes saved offline in local storage
+      </span>
+      <span>2026 Convention of Jehovah's Witnesses</span>
+    </div>
+  </footer>
+
+  <!-- ================= POPUP MODALS ================= -->
+
+  <!-- 1. SCRIPTURE POPUP MODAL -->
+  <div id="scriptureModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 transform transition-transform duration-200 translate-y-4 sm:translate-y-0">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="book-open" class="w-5 h-5 text-brand-600"></i>
+          <h3 id="scriptureModalTitle" class="font-bold text-base sm:text-lg text-slate-900 dark:text-white">Scripture Citation</h3>
+        </div>
+        <button id="closeScriptureModal" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="py-4 space-y-3">
+        <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50">
+          <p id="scriptureReferenceDisplay" class="font-semibold text-brand-800 dark:text-brand-300 text-base"></p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Read the complete chapter and study notes in the official <em>New World Translation of the Holy Scriptures</em>.</p>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+          <a id="jwBibleLink" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm flex items-center justify-center gap-2 shadow-xs transition">
+            <span>Open Reference on JW.ORG</span>
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+          <button id="insertScriptureToNoteBtn" class="w-full py-2.5 px-4 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium text-sm flex items-center justify-center gap-2 transition">
+            <i data-lucide="copy-plus" class="w-4 h-4"></i>
+            <span>Insert Reference into Current Note</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SHARE WITH DELEGATES MODAL (WITH QR CODE) -->
+  <div id="shareModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="share-2" class="w-5 h-5 text-brand-600"></i>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Share App with Delegates</h3>
+        </div>
+        <button id="closeShareModal" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="py-4 text-center space-y-4">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          Other delegates can scan this QR code or use the web link to install their own private copy on their phone or tablet.
+        </p>
+
+        <!-- QR Code Container -->
+        <div class="flex justify-center p-3 bg-white rounded-xl shadow-xs border border-slate-200 max-w-[220px] mx-auto">
+          <div id="qrcode"></div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <input type="text" id="shareUrlInput" readonly class="flex-1 text-xs p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 select-all" />
+            <button id="copyUrlBtn" class="px-3.5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1 transition">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="copyFeedback" class="text-xs text-emerald-600 font-medium hidden">Link copied to clipboard!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. EXPORT / BACKUP MODAL -->
+  <div id="exportModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="save" class="w-5 h-5 text-brand-600"></i>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Export & Backup Notes</h3>
+        </div>
+        <button id="closeExportModal" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="py-4 space-y-4">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          Save your notes to keep a permanent summary or transfer them to another device.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button id="downloadTextBtn" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 bg-slate-50 dark:bg-slate-800 flex items-center gap-3 text-left transition">
+            <i data-lucide="file-text" class="w-6 h-6 text-brand-600"></i>
+            <div>
+              <p class="text-sm font-semibold text-slate-900 dark:text-white">Text File (.txt)</p>
+              <p class="text-xs text-slate-500">Readable summary</p>
+            </div>
+          </button>
+
+          <button id="downloadJsonBtn" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 bg-slate-50 dark:bg-slate-800 flex items-center gap-3 text-left transition">
+            <i data-lucide="database" class="w-6 h-6 text-indigo-600"></i>
+            <div>
+              <p class="text-sm font-semibold text-slate-900 dark:text-white">Full Backup (.json)</p>
+              <p class="text-xs text-slate-500">Restorable data file</p>
+            </div>
+          </button>
+        </div>
+
+        <button id="printNotesBtn" class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-sm flex items-center justify-center gap-2 transition">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Print or Save to PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white dark:bg-brand-600 px-4 py-2.5 rounded-xl shadow-lg text-sm flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 translate-y-2">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toastMessage">Saved</span>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    /* ----------------------------------------------------
+     * 1. PROGRAM DATA STRUCTURE (Derived from Convention Schedule)
+     * ---------------------------------------------------- */
+    const PROGRAM_DATA = [
+      {
+        day: "Friday",
+        theme: "Happy are those conscious of their spiritual need",
+        scripture: "Matthew 5:3",
+        morning: [
+          { time: "9:20", title: "Music-Video Presentation", type: "music" },
+          { time: "9:30", title: "Song No. 160 and Prayer", type: "song" },
+          { 
+            id: "fri_m_1",
+            time: "9:40", 
+            title: "CHAIRMAN'S ADDRESS: Abundant Happiness Forever—Is It Realistic?", 
+            scriptures: ["Psalm 16:11", "Psalm 100:2"],
+            type: "talk" 
+          },
+          { 
+            id: "fri_m_2",
+            time: "10:10", 
+            title: "FEATURE BIBLE DRAMA: The Good News According to Jesus: Episode 4 'This Is Why I Have Come'", 
+            scriptures: ["Matthew 4:23-25", "Matthew 8:1-4", "Matthew 8:14-17", "Matthew 9:1-17", "Matthew 12:1-21", "Mark 1:21-3:19", "Luke 4:31-44", "Luke 5:12-6:16", "John 5:1-47"],
+            type: "drama" 
+          },
+          { time: "11:05", title: "Song No. 17 and Announcements", type: "song" },
+          { 
+            id: "fri_m_3",
+            time: "11:15", 
+            title: "SYMPOSIUM: Messianic Prophecy Fulfilled!", 
+            subparts: [
+              { id: "fri_m_3_1", title: '"He Himself Took Our Sicknesses"', scriptures: ["Matthew 8:16, 17", "Psalm 32:1, 2", "Isaiah 53:4, 5"] },
+              { id: "fri_m_3_2", title: '"He Will Not Quarrel"', scriptures: ["Matthew 12:15-21", "Isaiah 42:1-4"] },
+              { id: "fri_m_3_3", title: '"Without an Illustration He Would Not Speak"', scriptures: ["Matthew 13:34, 35", "Psalm 78:2"] }
+            ],
+            type: "symposium" 
+          },
+          { time: "12:10", title: "Song No. 14 and Intermission", type: "song" }
+        ],
+        afternoon: [
+          { time: "1:35", title: "Music-Video Presentation", type: "music" },
+          { time: "1:45", title: "Song No. 23", type: "song" },
+          { 
+            id: "fri_a_1",
+            time: "1:50", 
+            title: "What Did Jesus Teach Regarding the Sabbath?", 
+            scriptures: ["Matthew 12:1-14", "John 5:1-17"],
+            type: "talk" 
+          },
+          { 
+            id: "fri_a_2",
+            time: "2:10", 
+            title: "SYMPOSIUM: Imitate Those Who Ministered to Jesus!", 
+            subparts: [
+              { id: "fri_a_2_1", title: "The Apostles", scriptures: ["Luke 6:13, 15, 16"] },
+              { id: "fri_a_2_2", title: "Many Women", scriptures: ["Matthew 27:55", "Mark 15:40", "Luke 8:1-3"] }
+            ],
+            type: "symposium" 
+          },
+          { time: "2:50", title: "Song No. 76 and Announcements", type: "song" },
+          { 
+            id: "fri_a_3",
+            time: "3:00", 
+            title: '"Happy Are Those Who Wash Their Robes"', 
+            scriptures: ["Revelation 7:9, 10, 13-15", "Revelation 22:14", "John 5:24-29"],
+            type: "talk" 
+          },
+          { time: "3:30", title: "Song No. 155 and Closing Prayer", type: "song" }
+        ]
+      },
+      {
+        day: "Saturday",
+        theme: "There is more happiness in giving than there is in receiving",
+        scripture: "Acts 20:35",
+        morning: [
+          { time: "9:20", title: "Music-Video Presentation", type: "music" },
+          { time: "9:30", title: "Song No. 111 and Prayer", type: "song" },
+          { 
+            id: "sat_m_1",
+            time: "9:40", 
+            title: '"He Opened His Mouth and Began Teaching Them"', 
+            scriptures: ["Matthew 5:1, 2"],
+            type: "talk" 
+          },
+          { 
+            id: "sat_m_2",
+            time: "9:50", 
+            title: "FEATURE BIBLE DRAMA: The Good News According to Jesus: Episode 5 'Astounded at His Way of Teaching'", 
+            scriptures: ["Matthew 5:3-7:29", "Luke 6:17-49"],
+            type: "drama" 
+          },
+          { time: "10:25", title: "Song No. 89 and Announcements", type: "song" },
+          { 
+            id: "sat_m_3",
+            time: "10:35", 
+            title: "What Can Prevent Us From Being Happy?", 
+            scriptures: ["Luke 6:24-26"],
+            type: "talk" 
+          },
+          { 
+            id: "sat_m_4",
+            time: "10:50", 
+            title: "Can You Discern the Principle Behind the Law?", 
+            scriptures: ["Matthew 5:17-48"],
+            type: "talk" 
+          },
+          { 
+            id: "sat_m_5",
+            time: "11:15", 
+            title: "SYMPOSIUM: Lessons From the Land of Jesus", 
+            subparts: [
+              { id: "sat_m_5_1", title: "Salt and Light", scriptures: ["Matthew 5:13-16"] },
+              { id: "sat_m_5_2", title: "Plants and Animals", scriptures: ["Genesis 1:28, 29", "Matthew 6:19, 26, 28", "Matthew 7:6, 10, 15, 16"] }
+            ],
+            type: "symposium" 
+          },
+          { 
+            id: "sat_m_6",
+            time: "11:40", 
+            title: 'BAPTISM: "Your Father Who Looks On in Secret Will Repay You"', 
+            scriptures: ["Matthew 6:6"],
+            type: "talk" 
+          },
+          { time: "12:10", title: "Song No. 51 and Intermission", type: "song" }
+        ],
+        afternoon: [
+          { time: "1:35", title: "Music-Video Presentation", type: "music" },
+          { time: "1:45", title: "Song No. 125", type: "song" },
+          { 
+            id: "sat_a_1",
+            time: "1:50", 
+            title: 'SYMPOSIUM: "Happy Are..."', 
+            subparts: [
+              { id: "sat_a_1_1", title: '"Those Conscious of Their Spiritual Need"', scriptures: ["Matthew 5:3"] },
+              { id: "sat_a_1_2", title: '"Those Who Mourn"', scriptures: ["Matthew 5:4"] },
+              { id: "sat_a_1_3", title: '"The Mild-Tempered"', scriptures: ["Matthew 5:5"] },
+              { id: "sat_a_1_4", title: '"Those Hungering and Thirsting for Righteousness"', scriptures: ["Matthew 5:6"] },
+              { id: "sat_a_1_5", title: '"The Merciful"', scriptures: ["Matthew 5:7"] },
+              { id: "sat_a_1_6", title: '"The Pure in Heart"', scriptures: ["Matthew 5:8"] },
+              { id: "sat_a_1_7", title: '"The Peacemakers"', scriptures: ["Matthew 5:9"] },
+              { id: "sat_a_1_8", title: '"Those Who Have Been Persecuted for Righteousness\' Sake"', scriptures: ["Matthew 5:10"] },
+              { id: "sat_a_1_9", title: '"You When People Reproach You"', scriptures: ["Matthew 5:11, 12"] }
+            ],
+            type: "symposium" 
+          },
+          { time: "3:20", title: "Song No. 81 and Announcements", type: "song" },
+          { 
+            id: "sat_a_2",
+            time: "3:30", 
+            title: '"Why Are You Anxious?"', 
+            scriptures: ["Matthew 6:19-33"],
+            type: "talk" 
+          },
+          { 
+            id: "sat_a_3",
+            time: "3:55", 
+            title: '"Go In Through the Narrow Gate"', 
+            scriptures: ["Matthew 7:1-5, 12-14, 16-18, 24-27"],
+            type: "talk" 
+          },
+          { time: "4:30", title: "Song No. 21 and Closing Prayer", type: "song" }
+        ]
+      },
+      {
+        day: "Sunday",
+        theme: "Happy are your eyes because they see and your ears because they hear",
+        scripture: "Matthew 13:16",
+        morning: [
+          { time: "9:20", title: "Music-Video Presentation", type: "music" },
+          { time: "9:30", title: "Song No. 68 and Prayer", type: "song" },
+          { 
+            id: "sun_m_1",
+            time: "9:40", 
+            title: "SYMPOSIUM: Applying Lessons From Jesus' Illustrations", 
+            subparts: [
+              { id: "sun_m_1_1", title: "Four Types of Soil", scriptures: ["Matthew 13:18-23"] },
+              { id: "sun_m_1_2", title: "Wheat and Weeds", scriptures: ["Matthew 13:24-30"] },
+              { id: "sun_m_1_3", title: "Mustard Grain", scriptures: ["Matthew 13:31, 32"] },
+              { id: "sun_m_1_4", title: "Leaven", scriptures: ["Matthew 13:33"] },
+              { id: "sun_m_1_5", title: "Dragnet", scriptures: ["Matthew 13:47-50"] }
+            ],
+            type: "symposium" 
+          },
+          { time: "11:00", title: "Song No. 64 and Announcements", type: "song" },
+          { 
+            id: "sun_m_2",
+            time: "11:10", 
+            title: "PUBLIC BIBLE DISCOURSE: Have You Discovered the Treasure?", 
+            scriptures: ["Matthew 13:44-46"],
+            type: "talk" 
+          },
+          { 
+            id: "sun_m_3",
+            time: "11:40", 
+            title: "Summary of The Watchtower", 
+            scriptures: [],
+            type: "talk" 
+          },
+          { time: "12:10", title: "Song No. 140 and Intermission", type: "song" }
+        ],
+        afternoon: [
+          { time: "1:35", title: "Music-Video Presentation", type: "music" },
+          { time: "1:45", title: "Song No. 108", type: "song" },
+          { 
+            id: "sun_a_1",
+            time: "1:50", 
+            title: "FEATURE BIBLE DRAMA: The Good News According to Jesus: Episode 6 'Are You the Coming One?'", 
+            scriptures: ["Matthew 8:5-13", "Matthew 11:2-30", "Matthew 12:22-13:53", "Mark 3:19-4:34", "Luke 7:1-8:21"],
+            type: "drama" 
+          },
+          { time: "2:35", title: "Song No. 120 and Announcements", type: "song" },
+          { 
+            id: "sun_a_2",
+            time: "2:45", 
+            title: "What Did You Learn?", 
+            scriptures: [],
+            type: "talk" 
+          },
+          { 
+            id: "sun_a_3",
+            time: "2:55", 
+            title: '"Happy Are Your Eyes Because They See"', 
+            scriptures: ["Matthew 7:1-5", "Matthew 13:16, 17", "Luke 6:46-49", "Luke 10:21", "John 17:6", "James 1:22-25"],
+            type: "talk" 
+          },
+          { time: "3:45", title: "Song No. 163 and Closing Prayer", type: "song" }
+        ]
+      }
+    ];
+
+    /* ----------------------------------------------------
+     * 2. BIBLE BOOK NUMBER LOOKUP FOR JW.ORG DEEP-LINKING
+     * ---------------------------------------------------- */
+    const BIBLE_BOOKS = {
+      "Genesis": 1, "Exodus": 2, "Leviticus": 3, "Numbers": 4, "Deuteronomy": 5,
+      "Joshua": 6, "Judges": 7, "Ruth": 8, "1 Samuel": 9, "2 Samuel": 10,
+      "1 Kings": 11, "2 Kings": 12, "1 Chronicles": 13, "2 Chronicles": 14,
+      "Ezra": 15, "Nehemiah": 16, "Esther": 17, "Job": 18, "Psalm": 19, "Psalms": 19,
+      "Proverbs": 20, "Ecclesiastes": 21, "Song of Solomon": 22, "Isaiah": 23,
+      "Jeremiah": 24, "Lamentations": 25, "Ezekiel": 26, "Daniel": 27, "Hosea": 28,
+      "Joel": 29, "Amos": 30, "Obadiah": 31, "Jonah": 32, "Micah": 33,
+      "Nahum": 34, "Habakkuk": 35, "Zephania": 36, "Haggai": 37, "Zechariah": 38,
+      "Malachi": 39, "Matthew": 40, "Mark": 41, "Luke": 42, "John": 43,
+      "Acts": 44, "Romans": 45, "1 Corinthians": 46, "2 Corinthians": 47,
+      "Galatians": 48, "Ephesians": 49, "Philippians": 50, "Colossians": 51,
+      "1 Thessalonians": 52, "2 Thessalonians": 53, "1 Timothy": 54, "2 Timothy": 55,
+      "Titus": 56, "Philemon": 57, "Hebrews": 58, "James": 59, "1 Peter": 60,
+      "2 Peter": 61, "1 John": 62, "2 John": 63, "3 John": 64, "Jude": 65, "Revelation": 66
+    };
+
+    /**
+     * Resolves a scripture string into a direct official JW.ORG online Bible link.
+     */
+    function getJwBibleUrl(citation) {
+      if (!citation) return "https://www.jw.org/en/library/bible/study-bible/books/";
+      
+      // Match pattern like: "Matthew 5:1-3", "Psalm 16:11", "1 John 5:14"
+      const match = citation.match(/^([\d]?\s?[A-Za-z]+)\s+(\d+)(?::(\d+))?/);
+      if (match) {
+        const bookName = match[1].trim();
+        const chapter = match[2];
+        const verse = match[3] || "1";
+        const bookNum = BIBLE_BOOKS[bookName];
+
+        if (bookNum) {
+          const paddedBook = String(bookNum).padStart(2, '0');
+          const paddedChapter = String(chapter).padStart(3, '0');
+          const paddedVerse = String(verse).padStart(3, '0');
+          // Standard JW.ORG study Bible verse anchor scheme
+          return `https://www.jw.org/en/library/bible/study-bible/books/${bookName.toLowerCase().replace(/\s+/g, '-')}/${chapter}/#v${paddedBook}${paddedChapter}${paddedVerse}`;
+        }
+      }
+      // Fallback search link
+      return `https://www.jw.org/en/search/?q=${encodeURIComponent(citation)}`;
+    }
+
+    /* ----------------------------------------------------
+     * 3. STATE & LOCAL STORAGE PERSISTENCE
+     * ---------------------------------------------------- */
+    let currentDayIndex = 0;
+    let activeNoteTargetId = null; // Used when "Insert reference" is clicked
+    const STORAGE_KEY = "eternal_happiness_2026_notes_v1";
+
+    function getSavedNotes() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : {};
+      } catch (e) {
+        console.error("Failed to load notes", e);
+        return {};
+      }
+    }
+
+    function saveNote(talkId, text) {
+      const notes = getSavedNotes();
+      notes[talkId] = text;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        showToast("Note auto-saved");
+      } catch (e) {
+        console.error("Storage full or error", e);
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMessage");
+      toastMsg.textContent = msg;
+      toast.classList.remove("opacity-0", "translate-y-2");
+      toast.classList.add("opacity-100", "translate-y-0");
+      setTimeout(() => {
+        toast.classList.remove("opacity-100", "translate-y-0");
+        toast.classList.add("opacity-0", "translate-y-2");
+      }, 1400);
+    }
+
+    /* ----------------------------------------------------
+     * 4. RENDER PROGRAM CARDS & INTERACTIVE SCRIPTURES
+     * ---------------------------------------------------- */
+    function renderProgram(dayIndex, filterQuery = "") {
+      const talksList = document.getElementById("talksList");
+      const dayData = PROGRAM_DATA[dayIndex];
+      const savedNotes = getSavedNotes();
+      talksList.innerHTML = "";
+
+      // Update header banner
+      document.getElementById("dayHeaderTag").textContent = `${dayData.day.toUpperCase()} PROGRAM`;
+      document.getElementById("dayThemeText").textContent = `"${dayData.theme}"`;
+      document.getElementById("dayThemeScripture").innerHTML = `
+        <i data-lucide="book-open" class="w-3.5 h-3.5"></i> ${dayData.scripture}
+      `;
+      document.getElementById("dayThemeScripture").onclick = () => openScriptureModal(dayData.scripture);
+
+      // Render Morning & Afternoon Sessions
+      const sessions = [
+        { name: "Morning Session", list: dayData.morning },
+        { name: "Afternoon Session", list: dayData.afternoon }
+      ];
+
+      sessions.forEach(session => {
+        let matchingItems = session.list;
+
+        if (filterQuery) {
+          const q = filterQuery.toLowerCase();
+          matchingItems = session.list.filter(item => {
+            const inTitle = item.title.toLowerCase().includes(q);
+            const inScriptures = (item.scriptures || []).some(s => s.toLowerCase().includes(q));
+            const inNotes = item.id && (savedNotes[item.id] || "").toLowerCase().includes(q);
+            const inSub = (item.subparts || []).some(sub => 
+              sub.title.toLowerCase().includes(q) || 
+              sub.scriptures.some(s => s.toLowerCase().includes(q)) ||
+              (savedNotes[sub.id] || "").toLowerCase().includes(q)
+            );
+            return inTitle || inScriptures || inNotes || inSub;
+          });
+        }
+
+        if (matchingItems.length === 0) return;
+
+        const sessionHeader = document.createElement("div");
+        sessionHeader.className = "flex items-center gap-2 pt-4 pb-2 border-b border-slate-200 dark:border-slate-800 text-brand-700 dark:text-brand-300 font-bold uppercase tracking-wide text-xs";
+        sessionHeader.innerHTML = `
+          <i data-lucide="sun-medium" class="w-4 h-4"></i>
+          <span>${session.name}</span>
+        `;
+        talksList.appendChild(sessionHeader);
+
+        matchingItems.forEach(item => {
+          talksList.appendChild(createTalkCard(item, savedNotes));
+        });
+      });
+
+      if (talksList.children.length === 0) {
+        talksList.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i data-lucide="file-question" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
+            <p>No talks or notes match "${filterQuery}"</p>
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    function createTalkCard(item, savedNotes) {
+      const card = document.createElement("div");
+      card.className = "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs transition hover:shadow-sm";
+
+      if (item.type === "song" || item.type === "music") {
+        card.className += " opacity-80 bg-slate-50/50 dark:bg-slate-900/40";
+        card.innerHTML = `
+          <div class="flex items-center justify-between text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            <span class="font-semibold px-2 py-0.5 rounded-md bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">${item.time}</span>
+            <span class="flex-1 ml-3 font-medium">${item.title}</span>
+            <i data-lucide="${item.type === 'song' ? 'music' : 'video'}" class="w-4 h-4 text-slate-400"></i>
+          </div>
+        `;
+        return card;
+      }
+
+      // Check if it's a symposium with sub-parts
+      const hasSubparts = item.subparts && item.subparts.length > 0;
+
+      let scripturesHtml = "";
+      if (item.scriptures && item.scriptures.length > 0) {
+        scripturesHtml = `
+          <div class="flex flex-wrap gap-1.5 mt-2.5">
+            ${item.scriptures.map(sc => `
+              <button type="button" class="scripture-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-950/60 dark:text-brand-300 dark:hover:bg-brand-900/80 border border-brand-200 dark:border-brand-800 transition" data-scripture="${sc}" data-parent-id="${item.id}">
+                <i data-lucide="book" class="w-3 h-3"></i>
+                <span>${sc}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      let subpartsHtml = "";
+      if (hasSubparts) {
+        subpartsHtml = `
+          <div class="mt-4 space-y-4 pl-2 sm:pl-3 border-l-2 border-brand-200 dark:border-brand-900">
+            ${item.subparts.map(sub => `
+              <div class="space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                  <h4 class="text-sm font-semibold text-slate-800 dark:text-slate-200">${sub.title}</h4>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  ${sub.scriptures.map(sc => `
+                    <button type="button" class="scripture-badge inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/80 border border-indigo-200 dark:border-indigo-800 transition" data-scripture="${sc}" data-parent-id="${sub.id}">
+                      <i data-lucide="book" class="w-2.5 h-2.5"></i>
+                      <span>${sc}</span>
+                    </button>
+                  `).join('')}
+                </div>
+                <textarea 
+                  id="note_${sub.id}"
+                  placeholder="Notes for '${sub.title}'..." 
+                  class="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/70 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 transition resize-y min-h-[75px]"
+                >${savedNotes[sub.id] || ""}</textarea>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      let singleNoteArea = "";
+      if (!hasSubparts && item.id) {
+        singleNoteArea = `
+          <div class="mt-3.5">
+            <textarea 
+              id="note_${item.id}"
+              placeholder="Take notes, key points, personal applications..." 
+              class="w-full text-sm p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/70 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 transition resize-y min-h-[90px]"
+            >${savedNotes[item.id] || ""}</textarea>
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div>
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-100 dark:bg-brand-900/70 text-brand-800 dark:text-brand-300">${item.time}</span>
+            <span class="text-xs uppercase font-bold tracking-wider text-slate-400">${item.type}</span>
+          </div>
+          <h3 class="mt-1.5 font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-snug">${item.title}</h3>
+          ${scripturesHtml}
+          ${subpartsHtml}
+          ${singleNoteArea}
+        </div>
+      `;
+
+      // Auto-save listeners on textareas with debounce
+      const textareas = card.querySelectorAll("textarea");
+      textareas.forEach(tx => {
+        let timeout;
+        tx.addEventListener("input", (e) => {
+          const noteKey = tx.id.replace("note_", "");
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            saveNote(noteKey, e.target.value);
+          }, 450);
+        });
+      });
+
+      // Bind scripture popup clicks
+      const badges = card.querySelectorAll(".scripture-badge");
+      badges.forEach(badge => {
+        badge.addEventListener("click", () => {
+          const citation = badge.getAttribute("data-scripture");
+          const parentId = badge.getAttribute("data-parent-id");
+          openScriptureModal(citation, parentId);
+        });
+      });
+
+      return card;
+    }
+
+    /* ----------------------------------------------------
+     * 5. SCRIPTURE POPUP MODAL ACTIONS
+     * ---------------------------------------------------- */
+    const scriptureModal = document.getElementById("scriptureModal");
+    const scriptureModalTitle = document.getElementById("scriptureModalTitle");
+    const scriptureReferenceDisplay = document.getElementById("scriptureReferenceDisplay");
+    const jwBibleLink = document.getElementById("jwBibleLink");
+    const insertBtn = document.getElementById("insertScriptureToNoteBtn");
+    let currentModalCitation = "";
+
+    function openScriptureModal(citation, targetNoteId = null) {
+      currentModalCitation = citation;
+      activeNoteTargetId = targetNoteId;
+
+      scriptureModalTitle.textContent = "Scripture Reference";
+      scriptureReferenceDisplay.textContent = citation;
+      jwBibleLink.href = getJwBibleUrl(citation);
+
+      scriptureModal.classList.remove("hidden");
+      setTimeout(() => {
+        scriptureModal.classList.remove("opacity-0");
+        scriptureModal.querySelector("div").classList.remove("translate-y-4");
+      }, 10);
+    }
+
+    function closeScriptureModal() {
+      scriptureModal.classList.add("opacity-0");
+      scriptureModal.querySelector("div").classList.add("translate-y-4");
+      setTimeout(() => {
+        scriptureModal.classList.add("hidden");
+      }, 200);
+    }
+
+    document.getElementById("closeScriptureModal").onclick = closeScriptureModal;
+    scriptureModal.onclick = (e) => {
+      if (e.target === scriptureModal) closeScriptureModal();
+    };
+
+    insertBtn.onclick = () => {
+      if (!activeNoteTargetId) {
+        // Fallback: copy to clipboard
+        copyText(currentModalCitation);
+        showToast("Copied citation to clipboard");
+        closeScriptureModal();
+        return;
+      }
+      const tx = document.getElementById(`note_${activeNoteTargetId}`);
+      if (tx) {
+        const val = tx.value;
+        tx.value = val ? `${val}\n[${currentModalCitation}]: ` : `[${currentModalCitation}]: `;
+        saveNote(activeNoteTargetId, tx.value);
+        tx.focus();
+        showToast("Inserted into note");
+        closeScriptureModal();
+      }
+    };
+
+    /* ----------------------------------------------------
+     * 6. TAB SWITCHING (FRIDAY, SATURDAY, SUNDAY, INFO)
+     * ---------------------------------------------------- */
+    const dayTabs = document.querySelectorAll(".day-tab");
+    const dayHeaderBanner = document.getElementById("dayHeaderBanner");
+    const talksList = document.getElementById("talksList");
+    const infoSection = document.getElementById("infoSection");
+
+    dayTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        dayTabs.forEach(t => {
+          t.className = "day-tab py-2 px-3 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5";
+        });
+        tab.className = "day-tab flex-1 py-2 px-3 rounded-lg text-sm font-semibold text-center transition flex items-center justify-center gap-1.5 shadow-xs bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-900";
+
+        const dayAttr = tab.getAttribute("data-day");
+        if (dayAttr === "info") {
+          dayHeaderBanner.classList.add("hidden");
+          talksList.classList.add("hidden");
+          infoSection.classList.remove("hidden");
+        } else {
+          dayHeaderBanner.classList.remove("hidden");
+          talksList.classList.remove("hidden");
+          infoSection.classList.add("hidden");
+          currentDayIndex = parseInt(dayAttr, 10);
+          renderProgram(currentDayIndex);
+        }
+      });
+    });
+
+    /* ----------------------------------------------------
+     * 7. LIVE SEARCH
+     * ---------------------------------------------------- */
+    const searchToggleBtn = document.getElementById("searchToggleBtn");
+    const searchContainer = document.getElementById("searchContainer");
+    const liveSearchInput = document.getElementById("liveSearchInput");
+
+    searchToggleBtn.onclick = () => {
+      searchContainer.classList.toggle("hidden");
+      if (!searchContainer.classList.contains("hidden")) {
+        liveSearchInput.focus();
+      } else {
+        liveSearchInput.value = "";
+        renderProgram(currentDayIndex);
+      }
+    };
+
+    liveSearchInput.addEventListener("input", (e) => {
+      renderProgram(currentDayIndex, e.target.value.trim());
+    });
+
+    /* ----------------------------------------------------
+     * 8. THEME TOGGLE (LIGHT / DARK)
+     * ---------------------------------------------------- */
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    const themeIcon = document.getElementById("themeIcon");
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+        themeIcon.setAttribute("data-lucide", "sun");
+      } else {
+        document.documentElement.classList.remove("dark");
+        themeIcon.setAttribute("data-lucide", "moon");
+      }
+      lucide.createIcons();
+    }
+
+    themeToggleBtn.onclick = () => {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      themeIcon.setAttribute("data-lucide", isDark ? "sun" : "moon");
+      lucide.createIcons();
+    };
+
+    /* ----------------------------------------------------
+     * 9. SHARE & QR CODE GENERATION
+     * ---------------------------------------------------- */
+    const shareModalBtn = document.getElementById("shareModalBtn");
+    const shareModal = document.getElementById("shareModal");
+    const closeShareModal = document.getElementById("closeShareModal");
+    const shareUrlInput = document.getElementById("shareUrlInput");
+    const copyUrlBtn = document.getElementById("copyUrlBtn");
+    const copyFeedback = document.getElementById("copyFeedback");
+    let qrGenerated = false;
+
+    shareModalBtn.onclick = () => {
+      const currentUrl = window.location.href;
+      shareUrlInput.value = currentUrl;
+      shareModal.classList.remove("hidden");
+      setTimeout(() => shareModal.classList.remove("opacity-0"), 10);
+
+      if (!qrGenerated) {
+        new QRCode(document.getElementById("qrcode"), {
+          text: currentUrl,
+          width: 180,
+          height: 180,
+          colorDark: "#0f172a",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        qrGenerated = true;
+      }
+    };
+
+    closeShareModal.onclick = () => {
+      shareModal.classList.add("opacity-0");
+      setTimeout(() => shareModal.classList.add("hidden"), 200);
+      copyFeedback.classList.add("hidden");
+    };
+
+    shareModal.onclick = (e) => {
+      if (e.target === shareModal) closeShareModal.click();
+    };
+
+    function copyText(str) {
+      const temp = document.createElement("textarea");
+      temp.value = str;
+      temp.style.position = "absolute";
+      temp.style.left = "-9999px";
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+    }
+
+    copyUrlBtn.onclick = () => {
+      copyText(shareUrlInput.value);
+      copyFeedback.classList.remove("hidden");
+      setTimeout(() => copyFeedback.classList.add("hidden"), 2000);
+    };
+
+    /* ----------------------------------------------------
+     * 10. EXPORT & BACKUP MODAL LOGIC
+     * ---------------------------------------------------- */
+    const exportModalBtn = document.getElementById("exportModalBtn");
+    const exportModal = document.getElementById("exportModal");
+    const closeExportModal = document.getElementById("closeExportModal");
+    const downloadTextBtn = document.getElementById("downloadTextBtn");
+    const downloadJsonBtn = document.getElementById("downloadJsonBtn");
+    const printNotesBtn = document.getElementById("printNotesBtn");
+
+    exportModalBtn.onclick = () => {
+      exportModal.classList.remove("hidden");
+      setTimeout(() => exportModal.classList.remove("opacity-0"), 10);
+    };
+
+    closeExportModal.onclick = () => {
+      exportModal.classList.add("opacity-0");
+      setTimeout(() => exportModal.classList.add("hidden"), 200);
+    };
+
+    exportModal.onclick = (e) => {
+      if (e.target === exportModal) closeExportModal.click();
+    };
+
+    function downloadFile(content, fileName, contentType) {
+      const blob = new Blob([content], { type: contentType });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Text file export formatter
+    downloadTextBtn.onclick = () => {
+      const savedNotes = getSavedNotes();
+      let textOut = "====================================================\n";
+      textOut += "ETERNAL HAPPINESS - 2026 CONVENTION NOTEBOOK\n";
+      textOut += "====================================================\n\n";
+
+      PROGRAM_DATA.forEach(day => {
+        textOut += `\n### ${day.day.toUpperCase()} ###\nTheme: "${day.theme}" (${day.scripture})\n\n`;
+        const allItems = [...day.morning, ...day.afternoon];
+        allItems.forEach(item => {
+          if (item.subparts) {
+            textOut += `[${item.time}] ${item.title}\n`;
+            item.subparts.forEach(sub => {
+              textOut += `   • ${sub.title} (${sub.scriptures.join(", ")})\n`;
+              if (savedNotes[sub.id]) {
+                textOut += `     NOTES: ${savedNotes[sub.id].replace(/\n/g, "\n     ")}\n`;
+              }
+            });
+            textOut += "\n";
+          } else if (item.id) {
+            textOut += `[${item.time}] ${item.title}\n`;
+            if (item.scriptures && item.scriptures.length) {
+              textOut += `Scriptures: ${item.scriptures.join(", ")}\n`;
+            }
+            if (savedNotes[item.id]) {
+              textOut += `NOTES:\n${savedNotes[item.id]}\n`;
+            }
+            textOut += "----------------------------------------------------\n";
+          }
+        });
+      });
+
+      downloadFile(textOut, "Eternal_Happiness_2026_Notes.txt", "text/plain");
+      closeExportModal.click();
+    };
+
+    // JSON file export
+    downloadJsonBtn.onclick = () => {
+      const savedNotes = getSavedNotes();
+      const exportObject = {
+        convention: "Eternal Happiness 2026",
+        exportedAt: new Date().toISOString(),
+        notes: savedNotes
+      };
+      downloadFile(JSON.stringify(exportObject, null, 2), "eternal_happiness_backup.json", "application/json");
+      closeExportModal.click();
+    };
+
+    // Print / PDF
+    printNotesBtn.onclick = () => {
+      window.print();
+    };
+
+    /* ----------------------------------------------------
+     * 11. INLINE PWA SERVICE WORKER & MANIFEST GENERATION
+     * ---------------------------------------------------- */
+    function setupPwa() {
+      // Create dynamically injected manifest for PWA installability
+      const manifest = {
+        name: "Eternal Happiness 2026 Notebook",
+        short_name: "2026 Notes",
+        description: "Personal note-taking notebook for the 2026 Eternal Happiness Convention",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#1e3a8a",
+        theme_color: "#1e3a8a",
+        icons: [
+          {
+            src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a8a'/><text x='50%' y='55%' font-size='48' text-anchor='middle' fill='white' font-family='sans-serif' dominant-baseline='central'>📖</text></svg>",
+            sizes: "192x192",
+            type: "image/svg+xml"
+          }
+        ]
+      };
+      const stringManifest = JSON.stringify(manifest);
+      const blob = new Blob([stringManifest], { type: "application/json" });
+      const manifestURL = URL.createObjectURL(blob);
+      const link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = manifestURL;
+      document.head.appendChild(link);
+
+      // Register basic offline caching Service Worker if supported
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        const swCode = `
+          const CACHE_NAME = 'eh2026-v1';
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              fetch(e.request).catch(() => caches.match(e.request))
+            );
+          });
+        `;
+        const swBlob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Note:', err));
+      }
+    }
+
+    /* ----------------------------------------------------
+     * 12. INITIALIZATION
+     * ---------------------------------------------------- */
+    window.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      renderProgram(currentDayIndex);
+      setupPwa();
+    });
+  </script>
+</body>
+</html>
+```
